@@ -28,4 +28,16 @@ deployment.apps/tcp-echo-v1 created
 deployment.apps/tcp-echo-v2 created
 # $endsnippet
 
-## next: route all tcp connections to v1
+# Step 2: route all TCP traffic to v1 version of tcp-echos service
+
+# $snippet route_all_traffic_to_v1 syntax="bash" outputis="text"
+$ kubectl apply -f samples/tcp-echo/tcp-echo-all-v1.yaml@
+# $endsnippet
+
+# Step 3: Confirm that the tcp-echo service is up and running:
+
+# $snippet define_ingress_port_variable syntax="bash"
+$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}')
+# $endsnippet
+
+

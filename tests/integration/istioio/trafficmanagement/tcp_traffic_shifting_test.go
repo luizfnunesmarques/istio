@@ -25,13 +25,14 @@ func TestTcpTrafficShifting(t *testing.T) {
 		NewTest(t).
 		Run(istioio.NewBuilder("tasks__tcp_traffic_management__traffic_shifting").
 			Add(istioio.Script{
-			Input:		istioio.Path("scripts/tcp_traffic_shifting").
+			Input:		istioio.Path("scripts/tcp_traffic_shifting.txt").
 			WorkDir:  env.IstioSrc,
 		}).
 		Defer(istioio.Script{
 			Input:	istioio.Inline{
 				FileName: "cleanup.sh"
-				Value: ``
+				Value: `
+				kubectl delete -n default -f samples/tcp-echo/tcp-echo-services.yaml`
 			}
 		}).
 		Build())
