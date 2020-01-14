@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pilot
+package trafficmanagement
 
 import(
-	"fmt",
-	"strings"
 	"testing"
+
+	"istio.io/istio/pkg/test/env"
+	"istio.io/istio/pkg/test/framework"
+	"istio.io/istio/pkg/test/istioio"
 )
 
 func TestTcpTrafficShifting(t *testing.T) {
@@ -25,16 +27,17 @@ func TestTcpTrafficShifting(t *testing.T) {
 		NewTest(t).
 		Run(istioio.NewBuilder("tasks__tcp_traffic_management__traffic_shifting").
 			Add(istioio.Script{
-			Input:		istioio.Path("scripts/tcp_traffic_shifting.txt").
+			Input:		istioio.Path("scripts/tcp_traffic_shifting.txt"),
 			WorkDir:  env.IstioSrc,
 		}).
 		Defer(istioio.Script{
 			Input:	istioio.Inline{
-				FileName: "cleanup.sh"
+				FileName: "cleanup.sh",
 				Value: `
-				kubectl delete -n default -f samples/tcp-echo/tcp-echo-services.yaml`
-			}
+				kubectl delete -n default -f samples/tcp-echo/tcp-echo-services.yaml
+				`,
+			},
+			WorkDir: env.IstioSrc,
 		}).
 		Build())
-	)
 }
