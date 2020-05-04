@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Copyright 2019 Istio Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -u pipefail #return the status of last execution or 0 in case of no status
+set -e #forces an early exit when a command executes and return non-zero status
+
+#step 1
+
+# $snippet deploy_with_automatic_sidecar_injection syntax="bash" outputis="text"
+$ kubectl label namespace default istio-injection=enabled
+$ kubectl apply -f @samples/tcp-echo/tcp-echo-services.yaml@
+# $verify
+service/tcp-echo created
+deployment.apps/tcp-echo-v1 created
+deployment.apps/tcp-echo-v2 created
+# $endsnippet
+
+# Step 2: route all TCP traffic to v1 version of tcp-echos service
+
+# $snippet route_all_traffic_to_v1 syntax="bash" outputis="text"
+$ kubectl apply -f samples/tcp-echo/tcp-echo-all-v1.yaml@
+# $endsnippet
+
+# Step 3: Confirm that the tcp-echo service is up and running:
+
+# $snippet define_ingress_port_variable syntax="bash"
+$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}')
+# $endsnippet
+
+
